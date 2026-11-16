@@ -44,10 +44,10 @@
 ```bash
 # 1. 放进 profile 的 node_modules
 git clone https://github.com/weilifox/dsh-Rill-industrial-skin.git \
-  ~/.dsh/profiles/desktop/node_modules/rill-industrial-skin
+  ~/.dsh/profiles/desktop/node_modules/dsh-rill-industrial-skin
 
 # 2. 登记 bundle：~/.dsh/profiles/desktop/package.json
-#    "dsh": { "profile": { "bundles": [ ..., "rill-industrial-skin" ] } }
+#    "dsh": { "profile": { "bundles": [ ..., "dsh-rill-industrial-skin" ] } }
 
 # 3. 重启 DeepSeek Harness
 ```
@@ -56,11 +56,11 @@ git clone https://github.com/weilifox/dsh-Rill-industrial-skin.git \
 
 ```powershell
 New-Item -ItemType Junction `
-  -Path  "$env:USERPROFILE\.dsh\profiles\desktop\node_modules\rill-industrial-skin" `
-  -Target "D:\path\to\rill-industrial-skin"
+  -Path  "$env:USERPROFILE\.dsh\profiles\desktop\node_modules\dsh-rill-industrial-skin" `
+  -Target "D:\path\to\dsh-rill-industrial-skin"
 ```
 
-卸载：从 `bundles` 里去掉 `rill-industrial-skin` 后重启。宿主 `html[data-rill-industrial]` 不出现即代表插件未加载，样式完全不影响原生主题。
+卸载：从 `bundles` 里去掉 `dsh-rill-industrial-skin` 后重启。宿主 `html[data-rill-industrial]` 不出现即代表插件未加载，样式完全不影响原生主题。
 
 ## 设置
 
@@ -77,7 +77,7 @@ New-Item -ItemType Junction `
 ## 结构
 
 ```
-rill-industrial-skin/
+dsh-rill-industrial-skin/
 ├── package.json          # dsh.bundle.patch + dsh.client{platform:web}
 ├── cordis.patch.yml      # host 侧那条 loader 记录
 ├── lib/
@@ -88,7 +88,7 @@ rill-industrial-skin/
 └── docs/
 ```
 
-浏览器半边是单文件、零构建：一个 `<style data-plugin="rill-industrial-skin">`、一组写在 `html` 与 `html body` 上的 CSS 变量（宿主的 `--dsw-alias-*` 声明在 body，只覆盖 html 不会生效）、三个槽注册。没有打包步骤，`git clone` 即可用。
+浏览器半边是单文件、零构建：一个 `<style data-plugin="dsh-rill-industrial-skin">`、一组写在 `html` 与 `html body` 上的 CSS 变量（宿主的 `--dsw-alias-*` 声明在 body，只覆盖 html 不会生效）、三个槽注册。没有打包步骤，`git clone` 即可用。
 
 ### 实现要点
 

@@ -1,5 +1,11 @@
 # 变更记录
 
+## 1.2.0
+
+- **包名改为 `dsh-rill-industrial-skin`**（与生态内 `dsh-purge` / `dsh-cost-meter` 等保持一致）：`package.json` 的 `name`、`lib/index.js` 的 `name`、`cordis.patch.yml` 的 `id`/`name`、`lib/client.js` 的模块 id 与 `PKG` 常量一起改；仓库地址同步为 `weilifox/dsh-Rill-industrial-skin`。
+- 升级提示：profile 的 `node_modules` 目录名与 `dsh.profile.bundles` 里的条目要一起换成新名，旧名需移除，否则会重复加载。
+- **存储键故意保留 `rill-industrial-skin:settings:v1`**，改名后老用户的主题、壁纸、各滑块设置不会丢。
+
 版本号双写于 `package.json` 与 `lib/client.js` 的 `const VERSION`，设置页徽标显示后者——升级后若徽标没变，说明页面还在跑旧模块，`Ctrl+R` 刷新即可。
 
 ## 1.1.4

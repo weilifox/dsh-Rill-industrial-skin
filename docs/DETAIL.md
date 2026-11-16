@@ -1,14 +1,14 @@
 # 实现说明
 
-这份文档记录 `rill-industrial-skin` 的内部契约，方便改皮肤时不必重新逆向宿主。
+这份文档记录 `dsh-rill-industrial-skin` 的内部契约，方便改皮肤时不必重新逆向宿主。
 
 ## 1. 加载链路
 
 ```
-profiles/desktop/package.json  →  dsh.profile.bundles 包含 "rill-industrial-skin"
+profiles/desktop/package.json  →  dsh.profile.bundles 包含 "dsh-rill-industrial-skin"
         │
         ├─ host 半边：package.json `dsh.bundle.patch` → cordis.patch.yml
-        │     - insert: [{ id: rill-industrial-skin, name: rill-industrial-skin }]
+        │     - insert: [{ id: dsh-rill-industrial-skin, name: dsh-rill-industrial-skin }]
         │     载入 lib/index.js（空实现，只声明身份）
         │
         └─ browser 半边：package.json `dsh.client`
@@ -35,7 +35,7 @@ profiles/desktop/package.json  →  dsh.profile.bundles 包含 "rill-industrial-
 
 所有规则的前缀是 `html[data-rill-industrial="on"]`。这个属性由 `paint()` 写入、`unpaint()` 移除。插件被禁用或卸载时属性消失，样式表即使残留也完全不命中。
 
-样式表本身带 `data-plugin="rill-industrial-skin"` 与 `data-plugin-css="skin"`，注入前判重，避免 HMR 或重复 apply 叠加多份。
+样式表本身带 `data-plugin="dsh-rill-industrial-skin"` 与 `data-plugin-css="skin"`，注入前判重，避免 HMR 或重复 apply 叠加多份。
 
 ### 3.2 变量
 
@@ -167,7 +167,7 @@ key: {
 
 | 现象 | 检查 |
 |---|---|
-| 完全没变化 | `document.documentElement.getAttribute('data-rill-industrial')` 是否为 `on`；`style[data-plugin="rill-industrial-skin"]` 是否存在 |
+| 完全没变化 | `document.documentElement.getAttribute('data-rill-industrial')` 是否为 `on`；`style[data-plugin="dsh-rill-industrial-skin"]` 是否存在 |
 | 品牌字标没出现 | `sidebar.brand.mark` 槽是否存在；`data-slot="sidebar.brand.mark"` 元素宽度是否被压到 < 74px（容器查询会隐藏文字，只留鲸鱼） |
 | 设置页没有条目 | `settings.section` 是否在 `inject` 里；注册的 `label` 是否为空 |
 | 壁纸不显示 | `--rill-wallpaper` 是否为 `none`；`--rill-wallpaper-opacity` 是否为 0；data URL 是否过大被 `writeStore` 丢弃 |

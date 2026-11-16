@@ -72,7 +72,7 @@ const code = fs.readFileSync(require('path').join(__dirname, '..', 'lib', 'clien
 new Function('window', 'document', code)(global.window, global.document);
 
 if (!registration) throw new Error('module did not register');
-if (registration.id !== 'rill-industrial-skin') throw new Error('wrong id: ' + registration.id);
+if (registration.id !== 'dsh-rill-industrial-skin') throw new Error('wrong id: ' + registration.id);
 
 const mod = registration.factory((name) => {
   if (name === 'react') return React;
