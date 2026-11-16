@@ -43,7 +43,7 @@
 
 ```bash
 # 1. 放进 profile 的 node_modules
-git clone https://github.com/weilifox/Rill-industrial-skin.git \
+git clone https://github.com/weilifox/dsh-Rill-industrial-skin.git \
   ~/.dsh/profiles/desktop/node_modules/rill-industrial-skin
 
 # 2. 登记 bundle：~/.dsh/profiles/desktop/package.json
