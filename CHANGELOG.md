@@ -1,5 +1,9 @@
 # 变更记录
 
+## 1.2.1
+
+- README 首图换成实机截图 `docs/preview.png`（1600×952，528 KB），删除手绘的 `docs/preview.svg`。
+
 ## 1.2.0
 
 - **包名改为 `dsh-rill-industrial-skin`**（与生态内 `dsh-purge` / `dsh-cost-meter` 等保持一致）：`package.json` 的 `name`、`lib/index.js` 的 `name`、`cordis.patch.yml` 的 `id`/`name`、`lib/client.js` 的模块 id 与 `PKG` 常量一起改；仓库地址同步为 `weilifox/dsh-Rill-industrial-skin`。

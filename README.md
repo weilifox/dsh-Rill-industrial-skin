@@ -4,7 +4,7 @@
 >
 > An industrial-electronics skin for DeepSeek Harness: rectilinear chrome, deep blue workspace, white type, whale wordmark, dual appearance, adjustable wallpaper and frosted glass.
 
-![preview](docs/preview.svg)
+![Rill Industrial Skin 实机截图：深蓝工业风工作区、鲸鱼字标 DEEPSEEK HARNESS、壁纸与直角对话框](docs/preview.png)
 
 ---
 
