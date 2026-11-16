@@ -1,0 +1,42 @@
+{
+  "name": "Rill工业风皮肤",
+  "description": "工业电子风格皮肤：深蓝直角工作区、白色字体、鲸鱼字标、双外观、可调壁纸与毛玻璃。",
+  "settings": {
+    "title": "Rill工业风皮肤",
+    "subtitle": "工业电子 · 全直角 · 浅色/深色跟随",
+    "palette": "主题配色",
+    "paletteHint": "配色只改写结构色与强调色，文字始终保持白色。",
+    "appearance": "外观",
+    "mode": "明暗跟随",
+    "modeAuto": "跟随系统",
+    "modeLight": "浅色",
+    "modeDark": "深色",
+    "surfaceAlpha": "工作区不透明度",
+    "glassAlpha": "对话框透明度",
+    "glassBlur": "对话框模糊度",
+    "scanlines": "扫描质感",
+    "on": "开启",
+    "off": "关闭",
+    "wallpaper": "壁纸",
+    "wallpaperPlaceholder": "粘贴图片地址，或选择本地文件",
+    "wallpaperPick": "选择文件",
+    "wallpaperClear": "清除",
+    "wallpaperOpacity": "壁纸不透明度",
+    "wallpaperBlur": "壁纸模糊度",
+    "reset": "恢复默认",
+    "resetDone": "已恢复出厂设置。",
+    "storageHint": "设置存于本机 localStorage，不上传。",
+    "badType": "只接受图片文件。",
+    "tooLarge": "图片超过 2.6 MB，localStorage 可能存不下，请先压缩。",
+    "readFailed": "读取图片失败。",
+    "saved": "壁纸已写入本地存储。",
+    "cleared": "壁纸已清除。"
+  },
+  "themes": {
+    "indigo": "黛蓝",
+    "celadon": "宋青",
+    "tealorange": "橙青",
+    "deepblue": "深蓝",
+    "rose": "粉霞"
+  }
+}

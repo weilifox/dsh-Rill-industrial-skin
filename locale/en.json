@@ -1,0 +1,42 @@
+{
+  "name": "Rill Industrial Skin",
+  "description": "Industrial-electronics skin: deep blue rectilinear workspace, white type, whale wordmark, dual appearance, adjustable wallpaper and frosted glass.",
+  "settings": {
+    "title": "Rill Industrial Skin",
+    "subtitle": "industrial electronics · rectilinear · light/dark",
+    "palette": "Palette",
+    "paletteHint": "Palettes rewrite structure and accent colours only; type stays white.",
+    "appearance": "Appearance",
+    "mode": "Appearance",
+    "modeAuto": "System",
+    "modeLight": "Light",
+    "modeDark": "Dark",
+    "surfaceAlpha": "Workspace opacity",
+    "glassAlpha": "Panel opacity",
+    "glassBlur": "Panel blur",
+    "scanlines": "Scan texture",
+    "on": "On",
+    "off": "Off",
+    "wallpaper": "Wallpaper",
+    "wallpaperPlaceholder": "Paste an image URL, or pick a local file",
+    "wallpaperPick": "Pick file",
+    "wallpaperClear": "Clear",
+    "wallpaperOpacity": "Wallpaper opacity",
+    "wallpaperBlur": "Wallpaper blur",
+    "reset": "Reset",
+    "resetDone": "Factory settings restored.",
+    "storageHint": "Stored in this machine's localStorage. Nothing is uploaded.",
+    "badType": "Images only.",
+    "tooLarge": "Image exceeds 2.6 MB; localStorage may reject it. Compress first.",
+    "readFailed": "Could not read the image.",
+    "saved": "Wallpaper saved locally.",
+    "cleared": "Wallpaper cleared."
+  },
+  "themes": {
+    "indigo": "Indigo",
+    "celadon": "Celadon",
+    "tealorange": "Teal & Orange",
+    "deepblue": "Deep Blue",
+    "rose": "Rose Haze"
+  }
+}
