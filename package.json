@@ -1,6 +1,6 @@
 {
   "name": "dsh-rill-industrial-skin",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Rill Industrial Skin — an industrial-electronics skin for DeepSeek Harness: full right-angle chrome, deep blue workspace with adjustable opacity, white type, whale wordmark, system light/dark following, resizable wallpaper (opacity + blur) and a raised square send key. Five desaturated palettes: 黛蓝 / 宋青 / 橙青 / 深蓝 / 粉霞. Palette never touches text colour.",
   "type": "module",
   "main": "lib/index.js",

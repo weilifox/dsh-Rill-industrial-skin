@@ -6,6 +6,10 @@
 
 ![Rill Industrial Skin 实机截图：深蓝工业风工作区、鲸鱼字标 DEEPSEEK HARNESS、壁纸与直角对话框](docs/preview.png)
 
+*设置页（`设置 → Rill工业风皮肤`）：开关、五套低饱和配色、四区不透明度、壁纸与毛玻璃参数。*
+
+![设置页截图：开关、黛蓝/宋青/橙青/深蓝/粉霞五套配色、四区不透明度滑块与壁纸参数](docs/settings.png)
+
 ---
 
 ## 特性

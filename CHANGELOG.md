@@ -1,5 +1,9 @@
 # 变更记录
 
+## 1.2.2
+
+- README 增加设置页截图 `docs/settings.png`（891×579，71 KB），排在实机图之后，标注五套配色与四区滑块。
+
 ## 1.2.1
 
 - README 首图换成实机截图 `docs/preview.png`（1600×952，528 KB），删除手绘的 `docs/preview.svg`。
