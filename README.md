@@ -45,26 +45,35 @@
 
 ## 安装
 
+本插件不在 npm 上，装法是「克隆到任意目录 → 登记成 profile 的 link 依赖」。**只建 junction 而不登记依赖，插件页会把它判成内置插件，没有卸载 / 更新按钮**——这一点踩过坑，写在 `docs/DETAIL.md`。
+
 ```bash
-# 1. 放进 profile 的 node_modules
-git clone https://github.com/weilifox/dsh-Rill-industrial-skin.git \
-  ~/.dsh/profiles/desktop/node_modules/dsh-rill-industrial-skin
+# 1. 克隆到任意位置（不必放进 node_modules）
+git clone https://github.com/weilifox/dsh-Rill-industrial-skin.git ~/dsh-Rill-industrial-skin
 
-# 2. 登记 bundle：~/.dsh/profiles/desktop/package.json
-#    "dsh": { "profile": { "bundles": [ ..., "dsh-rill-industrial-skin" ] } }
-
-# 3. 重启 DeepSeek Harness
+# 2. 登记成 profile 依赖：link: 指向源码目录，改代码即时生效
+cd ~/.dsh/profiles/desktop
+node "<DSH 安装目录>/resources/app/runtime/primary-runtime/dependencies/pnpm/bin/pnpm.cjs" \
+  add "link:/absolute/path/to/dsh-Rill-industrial-skin" --config.minimum-release-age=0
+# Windows 例：link:D:/DSH-WorkSpace/设置类/rill-industrial-skin
 ```
 
-本地开发时也可以只建一个 junction/symlink：
+3. 让 profile 加载它——`~/.dsh/profiles/desktop/package.json` 里加上名字：
 
-```powershell
-New-Item -ItemType Junction `
-  -Path  "$env:USERPROFILE\.dsh\profiles\desktop\node_modules\dsh-rill-industrial-skin" `
-  -Target "D:\path\to\dsh-rill-industrial-skin"
+```json
+{ "dsh": { "profile": { "bundles": ["...", "dsh-rill-industrial-skin"] } } }
 ```
 
-卸载：从 `bundles` 里去掉 `dsh-rill-industrial-skin` 后重启。宿主 `html[data-rill-industrial]` 不出现即代表插件未加载，样式完全不影响原生主题。
+4. 重启 DeepSeek Harness（宿主启动时才重读 profile）。
+
+做完这一步，`设置 → 插件` 里它就是正经的 profile 插件：可停用、可卸载、可看版本。仓库不在 npm 上，点「更新」会提示没有新版本，属正常。
+
+### 卸载
+
+- 只想恢复原生外观：设置页顶部「皮肤已启用 · 点此停用」，配置不丢；
+- 正式卸载：插件页点卸载，或 `cd ~/.dsh/profiles/desktop && pnpm remove dsh-rill-industrial-skin`，再把 `dsh.profile.bundles` 里的名字去掉，重启。
+
+宿主 `html[data-rill-industrial]` 不出现即代表插件未加载，样式完全不影响原生主题。
 
 ## 设置
 
@@ -92,7 +101,7 @@ dsh-rill-industrial-skin/
 └── docs/
 ```
 
-浏览器半边是单文件、零构建：一个 `<style data-plugin="dsh-rill-industrial-skin">`、一组写在 `html` 与 `html body` 上的 CSS 变量（宿主的 `--dsw-alias-*` 声明在 body，只覆盖 html 不会生效）、三个槽注册。没有打包步骤，`git clone` 即可用。
+浏览器半边是单文件、零构建：一个 `<style data-plugin="dsh-rill-industrial-skin">`、一组写在 `html` 与 `html body` 上的 CSS 变量（宿主的 `--dsw-alias-*` 声明在 body，只覆盖 html 不会生效）、三个槽注册。没有打包步骤，`git clone` + `pnpm add "link:..."` 即可用。
 
 ### 实现要点
 

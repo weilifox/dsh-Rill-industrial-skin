@@ -1,5 +1,11 @@
 # 变更记录
 
+## 1.2.3
+
+- 安装说明改为**登记成 profile 的 link 依赖**（`pnpm add "link:<源码路径>"`）：只建 junction 只写 `dsh.profile.bundles` 的话，插件能加载，但插件页面会把它判成内置插件、没有卸载和更新入口——插件页读的是 profile `dependencies`，`bundles` 只决定加载。
+- `docs/DETAIL.md` 第 1 节补「为什么必须是 link 依赖」与两处状态错位的说明；第 2 节槽位契约修正为实际实现：`inject: ['slots']`、`name` 必须是槽键、遮蔽用 `priority: -1`、list 槽必带 `id`，并补上此前漏掉的 `sidebar.brand.name`。
+- README 增「卸载」小节，写明「停用外观」与「正式卸载」是两回事。
+
 ## 1.2.2
 
 - README 增加设置页截图 `docs/settings.png`（891×579，71 KB），排在实机图之后，标注五套配色与四区滑块。

@@ -5,27 +5,46 @@
 ## 1. 加载链路
 
 ```
-profiles/desktop/package.json  →  dsh.profile.bundles 包含 "dsh-rill-industrial-skin"
+profiles/desktop/package.json
+    ├─ dependencies["dsh-rill-industrial-skin"] = "link:<源码绝对路径>"   ← 决定「插件页是否算已安装」
+    └─ dsh.profile.bundles 含 "dsh-rill-industrial-skin"                  ← 决定「加载不加载」
         │
         ├─ host 半边：package.json `dsh.bundle.patch` → cordis.patch.yml
         │     - insert: [{ id: dsh-rill-industrial-skin, name: dsh-rill-industrial-skin }]
-        │     载入 lib/index.js（空实现，只声明身份）
+        │     载入 lib/index.js（空实现，只声明身份 —— 皮肤全部逻辑在浏览器半边）
         │
         └─ browser 半边：package.json `dsh.client`
-              { platform: "web", immediately: true,
-                inject: ["@deepseek-ai/dsh-client-ui-layout",
-                         "@deepseek-ai/dsh-client-ui-settings"] }
+              { platform: "web", immediately: true }
               载入 lib/client.js，它调用 window.__ModuleLoader__.load({ id, factory })
 ```
 
-`inject` 的两项是槽的提供者：`sidebar.brand.mark` 来自 layout，`settings.section` 来自 settings。少了任何一个，注册会静默不生效。
+### 1.1 为什么必须是 link 依赖
+
+只把目录（junction / symlink / 解压）放进 `profiles/<profile>/node_modules` 并写进 `bundles`，插件**能加载、能跑**，但插件页面会把它归到「内置插件 / 全局插件」、标 `installed: false`，**没有卸载和更新按钮**。插件页判断"是否已安装"看的是 profile `package.json` 的 `dependencies`，`bundles` 只负责加载。
+
+登记成 link 依赖即可（源码改动仍然即时生效，不需要重新安装）：
+
+```bash
+cd ~/.dsh/profiles/desktop
+node "<DSH>/resources/app/runtime/primary-runtime/dependencies/pnpm/bin/pnpm.cjs" \
+  add "link:/absolute/path/to/dsh-rill-industrial-skin" --config.minimum-release-age=0
+```
+
+登记后 `node_modules/dsh-rill-industrial-skin` 就是这个源码目录的 symlink，条目显示为 `"link:..."`。卸载走插件页或 `pnpm remove`，然后把 `bundles` 里的名字一起删掉——两处只删一处会留下"加载但无入口"或"已安装但不加载"的错位状态。
 
 ## 2. 槽位契约
 
-| 槽 | 类型 | 本插件注册的组件 | 备注 |
-|---|---|---|---|
-| `sidebar.brand.mark` | single | `BrandMark` | `order: 0`，与宿主品牌格同位 |
-| `settings.section` | list | `SettingsPage` | `label: "Rill工业风皮肤"`，`inject: () => ({ layout: "fill" })` |
+| 槽 | 类型 | 归属包 | 本插件注册 | registrant / priority |
+|---|---|---|---|---|
+| `sidebar.brand.mark` | single | `@deepseek-ai/dsh-client-ui-sidebar` | `WhaleMark`（鲸鱼图标 + `DEEPSEEK HARNESS` 两行合体） | `dsh-rill-industrial-skin` / `-1` |
+| `sidebar.brand.name` | single | 同上 | `BrandName`（占位，实际字标在上面的 mark 里） | 同上 / `-1` |
+| `settings.section` | list | `@deepseek-ai/dsh-client-ui-settings` | `SettingsPage` | `id: dsh-rill-industrial-skin.settings`、`order: 60`、`label: "Rill工业风皮肤"`、`inject: () => ({ layout: "fill" })` |
+
+三条硬规则（都踩过）：
+
+1. **`inject: ['slots']`** —— cordis 必须先声明要用的服务，否则 `ctx.slots` 不可访问，抛 `cannot get property "slots" without inject`。这里要写服务键 `slots`，**不是包名**。
+2. **`name` 必须是槽键本身**，不是自定义标识；写错会抛 `slot "X" is not declared`。
+3. **遮蔽用 `priority`，不是 `order`**。single 槽同一优先级重复注册会直接抛错；宿主外壳自己以 `priority: 0` 占着品牌格，用 `-1`（渲染优先级最低者）顶掉它。list 槽才用 `order` 排序，且**必须带 `id`**。
 
 `settings.section` 的 `label` 是设置页左侧的条目名；`layout: "fill"` 让页面拿到整列宽度而不是居中窄栏。
 
