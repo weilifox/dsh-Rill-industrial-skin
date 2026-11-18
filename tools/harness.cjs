@@ -113,7 +113,7 @@ for (const [slot, def] of regs) {
 // Style sheet + variables
 console.log('style tags appended:', styleTags.length, '| plugin attr:', styleTags[0].dataset.plugin, '| cssId:', styleTags[0].dataset.pluginCss);
 console.log('css bytes:', styleTags[0].textContent.length);
-const want = ['--rill-bg','--rill-side','--rill-surface','--rill-accent','--rill-accent-edge','--rill-glass-alpha','--rill-glass-blur','--rill-wallpaper','--rill-wallpaper-opacity','--rill-wallpaper-blur','--dsw-alias-label-primary','--dsw-alias-bg-base','--dsw-alias-button-primary-fill'];
+const want = ['--rill-bg','--rill-side','--rill-surface','--rill-accent','--rill-accent-edge','--rill-accent2','--rill-accent2-edge','--rill-key-ink','--rill-glass-alpha','--rill-glass-blur','--rill-wallpaper','--rill-wallpaper-opacity','--rill-wallpaper-blur','--dsw-alias-label-primary','--dsw-alias-bg-base','--dsw-alias-button-primary-fill'];
 const missing = want.filter((k) => !(k in vars));
 console.log('vars written:', Object.keys(vars).length, '| missing:', missing.length ? missing.join(',') : 'none');
 console.log('root attr:', html._attrs['data-rill-industrial'], '| theme:', html._attrs['data-rill-industrial-theme'], '| mode:', html._attrs['data-rill-industrial-mode']);

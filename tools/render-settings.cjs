@@ -65,6 +65,33 @@ try {
   console.log('RENDER OK, nodes =', nodes);
   console.log('top class:', tree.props && tree.props.className);
   console.log('children count:', (tree.children||[]).length);
+
+  // Harvest the palette picker from the same tree the counter walks, so a new
+  // palette that never reaches the UI fails here instead of silently missing.
+  const names = [];
+  (function harvest(n) {
+    if (n == null || n === false) return;
+    if (Array.isArray(n)) return n.forEach(harvest);
+    if (typeof n === 'object' && n.props) {
+      if (n.props.className === 'rill-swatch__name') {
+        const txt = (n.children || []).flat(4).filter((c) => typeof c === 'string' || typeof c === 'number');
+        names.push(txt.join('') || '(empty)');
+        return;
+      }
+      // Children live on the node (the stub passes them as extra args), so no
+      // need to re-invoke function components — walking children already covers
+      // what they rendered.
+    }
+    (n.children || []).forEach(harvest);
+  })(tree);
+
+  console.log('palettes in picker (' + names.length + '):', names.join(' / '));
+  if (names.length !== 6) {
+    console.log('MISMATCH: expected 6 palettes, got ' + names.length);
+    process.exitCode = 1;
+  } else {
+    console.log('palette picker OK');
+  }
 } catch (e) {
   console.log('RENDER THREW:', e && e.message);
   console.log(e && e.stack && e.stack.split('\n').slice(0, 5).join('\n'));

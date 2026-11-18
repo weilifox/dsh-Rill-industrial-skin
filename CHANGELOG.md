@@ -1,5 +1,12 @@
 # 变更记录
 
+## 1.2.4
+
+- 新增第六套配色 **暮紫 / `violet`（Dusk Violet）**：从《鸣潮》启动画面取色后低饱和化，色相 252°（现有「深蓝」在 210–216°，故两者不再雷同）；深色 `bg #201C3E / side #16132C / surf #2E2857 / surf2 #3E3672`，浅色 `#383062 / #2C2550 / #463C78 / #5A4E94`，强调色 `#9C8DD6 / #C4B8EE`。
+- 新增 `accent2` 概念：可点控件专用色。`violet` 声明青绿（深 `#6CC2BC` / 浅 `#8CD0CA`），只作用于发送键与焦点环；**其余五套主题未声明，`accent2` 回退为 `accent` 原值，观感与 1.2.3 完全一致**。
+- 发送键新增 `--rill-key-ink`：声明了 `accent2` 的主题用深色箭头（浅底青绿上白字对比不足），其余仍为白色。
+- `locale/zh.json`、`locale/en.json`、README 配色表、`docs/DETAIL.md` 变量表同步。
+
 ## 1.2.3
 
 - 安装说明改为**登记成 profile 的 link 依赖**（`pnpm add "link:<源码路径>"`）：只建 junction 只写 `dsh.profile.bundles` 的话，插件能加载，但插件页面会把它判成内置插件、没有卸载和更新入口——插件页读的是 profile `dependencies`，`bundles` 只决定加载。

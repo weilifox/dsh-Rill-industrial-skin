@@ -71,6 +71,8 @@ node "<DSH>/resources/app/runtime/primary-runtime/dependencies/pnpm/bin/pnpm.cjs
 | `--rill-surface` / `--rill-surface-2` | `surf` / `surf2`，alpha 同上 |
 | `--rill-line` / `--rill-line-strong` | 随 alpha 从 `0.10/0.18` 抬到 `0.20/0.32` |
 | `--rill-accent` | 调色板强调色；`-raise` 向白混 28%；`-strong` ×0.8；`-edge` ×0.52；`-soft` alpha .72 |
+| `--rill-accent2` | 可点控件色（发送键、焦点环）；调色板未声明 `accent2` 时取 `accent` 值，`-raise/-strong/-edge` 同样派生 |
+| `--rill-key-ink` | 发送键箭头色；声明了 `accent2` 的主题用 `#0d1420`（浅底上的青绿需要深字），否则 `#ffffff` |
 | `--rill-glass-rgb` | `surf` 的 `r,g,b` 三元组，供 `rgba()` 拼 alpha |
 | `--rill-glass-alpha` / `--rill-glass-blur` | 对话框透明度 / 模糊度 |
 | `--rill-wallpaper` / `-opacity` / `-blur` | 壁纸层 |
