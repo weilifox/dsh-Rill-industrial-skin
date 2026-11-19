@@ -86,8 +86,8 @@ try {
   })(tree);
 
   console.log('palettes in picker (' + names.length + '):', names.join(' / '));
-  if (names.length !== 6) {
-    console.log('MISMATCH: expected 6 palettes, got ' + names.length);
+  if (names.length !== 7) {
+    console.log('MISMATCH: expected 7 palettes, got ' + names.length);
     process.exitCode = 1;
   } else {
     console.log('palette picker OK');

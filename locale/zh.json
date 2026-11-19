@@ -15,6 +15,7 @@
     "glassAlpha": "对话框透明度",
     "glassBlur": "对话框模糊度",
     "scanlines": "扫描质感",
+    "paperGrain": "纹理强度",
     "on": "开启",
     "off": "关闭",
     "wallpaper": "壁纸",
@@ -38,6 +39,7 @@
     "tealorange": "橙青",
     "deepblue": "深蓝",
     "rose": "粉霞",
-    "violet": "暮紫"
+    "violet": "暮紫",
+    "parchment": "赭笺"
   }
 }

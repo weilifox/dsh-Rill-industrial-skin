@@ -76,10 +76,77 @@ node "<DSH>/resources/app/runtime/primary-runtime/dependencies/pnpm/bin/pnpm.cjs
 | `--rill-glass-rgb` | `surf` 的 `r,g,b` 三元组，供 `rgba()` 拼 alpha |
 | `--rill-glass-alpha` / `--rill-glass-blur` | 对话框透明度 / 模糊度 |
 | `--rill-wallpaper` / `-opacity` / `-blur` | 壁纸层 |
+| `--rill-paper-tex` | 纸纤维瓦片（`url("data:image/png...")` 或 `none`）；只有声明 `paper` 的配色会生成，见 3.3 |
+| `--rill-code-bg` / `-block` / `-banner` | 行内代码 chip / 代码块 / 代码块标题条；由 `bg` 与 `ink` 互混得到（声明 `ink` 的配色混 0.10/0.055/0.13，其余 0.16/0.10/0.18） |
+| `--rill-plate` / `--rill-plate-ink` | 「深起面」底色与其上的字色。只有声明了 `plate` 的配色给出实色（赭笺深 `#ba8f62` / 浅 `#b68c5f`，字 `#261e12`），其余配色解析为 `transparent`，于是宿主的原生中性色照旧。消费端是 20 个 `button-elevated/floating/ghost`、`bg-layer-3`、`card-fill`、`hovercard-bg`、`specific-bubble/-tip`、`label-dimmed` 等 `--dsw-alias-*` token，加上侧栏选中行与文件夹 hover 的具体规则 |
+| `--rill-code-selected` / `-unselected` | 代码段选中/未选中底色；选中版向 `accent`（声明了 `ink` 的纸类配色改用 `accent2`）混 0.24–0.26，未选中版向 `ink` 混 0.22（纸类 0.14） |
+| `--rill-menu-surface` | 菜单/弹层底色，`surf` 向 `bg` 混 18% 后取 alpha .97 |
 
-**文字类**：`--rill-ink`（`#fff`）、`--rill-ink-2`（.72）、`--rill-ink-3`（.46），常量，与调色板无关。
+**为什么会有 `--rill-code-*`**：`--dsw-alias-markdown-inline-code`、`-code-block`、`-code-block-banner`、`-code-segment-*`、`-markdown-tag`、`-markdown-citation`、`turn-trigger-bg`、`-specific-menu`、`-menu-group-header-fill`、`-specific-selector`、`-toast-bg`、`-tooltip-bg`、`-scrollbar-*` 这批 token 在 `design-platform.css:177`（浅色 body 块）与 `:329`（`body[data-ds-dark-theme]` 块）里指向 `--dsw-static-neutral-bluish-900` / `--dsw-static-neutral-800`。深色主题下它们看着只是"深一点的灰"，一到浅纸配色就变成一块近黑的方块——就是用户报的「那些黑色的框」。修法不是逐个打补丁，而是在两个 token 块里把这 18 个位置**统一改指向上面派生出来的变量**，于是任何配色都不会再露出原生深色值。
 
-### 3.3 "配色不影响字体"是怎么保证的
+**文字类**：`--rill-ink`、`--rill-ink-2`（.72）、`--rill-ink-3`（.46）。默认是纯白，**只有声明 `ink` 的配色会换成墨色**——目前只有 `parchment`。同时 `color-scheme` 跟着调色板的 `scheme` 字段走（默认 `dark`，`parchment` 为 `light`），`unpaint()` 会把它清回空值。
+
+### 3.2b 深起面（`--rill-plate`）
+
+宿主的 155 个 `--dsw-alias-*` 里有约 60 个是"浅起的表面"：按钮、卡片、气泡、浮层。它们的默认值来自 `--dsw-static-neutral-bluish-750/800`（`#43454A` / `#353638`）——深色主题下是一块几乎看不见的浅灰，在暖纸上却是一块冷灰板。
+
+处理方式是"统一改指向"而不是逐个截图修：在 `html[on][theme="parchment"] body` 上把这 20 个 token 指向 `--rill-plate` / `--rill-surface` / `--rill-plate-ink`。选 `body` 是因为设计平台在这层声明它们；加 `[theme="parchment"]` 是因为其余六套配色必须逐字节保持 1.2.5 的观感——`--rill-plate` 对它们解析为 `transparent`，即使规则命中也没有视觉差异。
+
+选中行的具体规则写在 `[data-slot="sidebar"]` 下，因为宿主把底色放在行元素上、把字色放在子元素上，两者都得改（` ... * ` 那条不是偷懒，是必须的）。
+
+### 3.2c 会话标题条（一整块不透明台面）
+
+标题条在宿主里是 `ConversationHeader.tsx:18` 渲染的 `<header className={clsx(css.header, …)} data-window-drag>`，`min-height:76px`（`ConversationRoot.module.css:23` 的 `.header`，`grid-template-columns:auto minmax(0,1fr)`）。它的哈希类名编译后是 `an3WzG_header` —— **`"an3WzG_header".indexOf('_header_') === -1`**，这个类名里没有 `_header_` 子串。这条事实是 1.3.4 / 1.3.5 两次把标题条改没的直接原因：`[class*="_header_"]` 一个都匹配不到。
+
+同一条带子里装着两样东西：
+
+- 标题行（`conversation.session.header` 槽，里面是 crumbs + 右侧动作）；
+- 视图页签条（`.tabs`，`grid-column:1/-1; z-index:1`），它所在的容器在别处挂了 `_tabHost_` 底色。
+
+所以自然状态下会出现两个不同的底 —— 看起来就是"两条杠"。
+
+**槽锚点不能承载背景**：`dsh-client-ui-renderer/src/client/scoped-slots.tsx:1319` 的 `ANCHOR_STYLE = { display: 'contents' }`，槽锚点没有盒子，把 `background-color` 打在 `[data-slot="conversation.header"]` 上永远看不见。填充必须落在锚点**里面的 `<header>` 元素**上：
+
+```css
+html[data-rill-industrial="on"] [data-rill-chrome="1"],
+html[data-rill-industrial="on"] [data-slot="conversation.header"] > header,
+html[data-rill-industrial="on"] [data-slot="conversation.header"] header[data-window-drag] {
+  background-color: var(--rill-a-header);
+  background-image: var(--rill-paper-tex);
+}
+```
+
+然后把内部层清掉 —— `[data-slot="conversation.header"] header > *`、页签条容器（`[class*="tabHost"]` / `[role="tablist"]` / `[data-conversation-tabs]`）、`conversation.session.header` 及其直接子层 transparent + `background-image:none`。这样从标题文字到页签是一条连续的纸，纹理跨过整个高度。
+
+**不要用能匹配到填充层自己的通配**：1.3.4 用 `[data-rill-chrome] [class*="_header_"]` 统一刷透明，结果把承载填充的那一层也清了。
+
+标记由 `markChrome()` 打，规则是**从槽锚点走到它里面的 `<header>`**：
+
+```js
+head = scope.querySelector('header[data-window-drag], [data-conversation-header-leading]');
+if (head && head.tagName !== 'HEADER') head = head.closest('header') || null;
+if (!head || head.getBoundingClientRect().height > 220) continue;
+```
+
+`data-window-drag` 是宿主自己写在 `<header>` 上的（与 `-webkit-app-region` 共用），`data-conversation-header-leading` 是里面那一行的稳定属性，两者都比类名可靠。高度阈值 220 用来排除"装得下整个消息列表"的容器。
+
+触发点：paint 时、MutationObserver 回调里、以及 10×250ms 的定时桥（宿主重渲染会换元素）。回归由 `tools/harness.cjs` 断言守着：最终 CSS 里若出现 `[class*="_header_"]` 或不含 `[data-slot="conversation.header"] > header`，直接失败。
+
+### 3.3 纸纤维（赭笺）
+
+`paperTile(seed, strength)` 在浏览器里用 canvas 现画一张 192×192 的瓦片再转成 data URL，不随包发布图片：
+
+- 三层叠加，没有一层是规则的：260 团 5–18px 的**不规则斑块**（每团由三片错位的圆叠成，所以看不出圆边，棕/白交替）→ 1400 个 1–2px 细杂点 → 220 根 6–32px 的**断纤维**（走一步可能横移一像素，边缘环绕）。第一版用的是「2–4px 间距的通高竖线」，实测读作织布而不是纸，已换掉。
+- 三层各有自己的 alpha 增益（斑块 ×2.4 / 杂点 ×4.2 / 纤维 ×4.6），因为不加增益时最粗那层几乎不可见。
+- **无缝**：每个图案都以 `[-S, 0, S] × [-S, 0, S]` 九个偏移重复绘制一遍，边缘与对边自然接上。
+- **带 alpha**：强度直接进 `rgba()` 的 alpha 通道，所以侧栏不透明度滑块仍然透得过去，纹理不会把滑块效果吃掉。
+- **滑块行程**：`strength` 在函数入口先 `× 1.15` 再 `min(1, ·)`，默认值 0.7。按上述增益实测每通道标准差：40% → 1.6、60% → 3.3、70% → 4.2、90% → 5.9（参考图 4.4）。所以默认档几乎正好是参考纸的颗粒，往右还能更旧；再大的倍率会让 0–60% 区间几乎无变化。
+- **缓存**：`paperCacheKey = seed + ':' + strength`，滑块不动就不重画（`toDataURL` 不便宜）。
+- **承载方式**：写成 `background-image` 而不是注入伪元素——左右栏是 React 渲染的，树里的节点下一次重渲染就没了，背景活得更久。
+- **染色**：三层都用暖棕（`rgba(118,86,42,·)` / `rgba(255,250,234,·)` 等），和纸色同族；中性灰只在纸是灰的那些版本里成立，暖纸上会显脏。
+
+### 3.4 "配色不影响字体"是怎么保证的
+
 
 宿主 alias token 分两类，被分别处理：
 
@@ -88,7 +155,9 @@ node "<DSH>/resources/app/runtime/primary-runtime/dependencies/pnpm/bin/pnpm.cjs
 
 两边在同一个声明块里分成两段，中间有显式注释。这样不需要在消费端做声明过滤，也不会出现"某个 token 忘了排除"。
 
-### 3.4 直角
+例外只有 `parchment`：它声明 `ink`，于是 `--rill-ink*` 变成墨色。这是设计上要的（纸面白字没有对比度），实现上是**同一个变量换源**，没有给任何消费端加特例。
+
+### 3.5 直角
 
 ```css
 html[data-rill-industrial="on"] *,
@@ -98,7 +167,7 @@ html[data-rill-industrial="on"] *::after { border-radius: 0 !important; }
 
 用显式 reset 而不是 `all: unset`：工业风是外壳问题，不该拆掉宿主的布局引擎。副作用是滑杆圆点变成方块——这正是要的效果。
 
-### 3.5 壁纸与扫描线
+### 3.6 壁纸与扫描线
 
 ```
 html 背景色 = --rill-bg            （最底层，画布）
@@ -110,7 +179,7 @@ body::after   z-index:-1  扫描线   0° 细线 + 90° 网格
 
 `body` 自身的 `background-color` 被设为 `transparent`，`html` 的 `background-color` 才是深蓝。这样壁纸层与深蓝底是叠加关系而非互相覆盖。
 
-### 3.6 毛玻璃对话框
+### 3.7 毛玻璃对话框
 
 ```css
 [data-composer-card] {
@@ -123,7 +192,7 @@ body::after   z-index:-1  扫描线   0° 细线 + 90° 网格
 
 **不要**碰 `[data-composer-card]::before/::after`：窗口两侧的括线装饰被 orca-link 一类插件占用，覆盖会打架。
 
-### 3.7 凸起发送键
+### 3.8 凸起发送键
 
 三层构成"实体键"：
 

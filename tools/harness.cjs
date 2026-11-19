@@ -118,6 +118,22 @@ const missing = want.filter((k) => !(k in vars));
 console.log('vars written:', Object.keys(vars).length, '| missing:', missing.length ? missing.join(',') : 'none');
 console.log('root attr:', html._attrs['data-rill-industrial'], '| theme:', html._attrs['data-rill-industrial-theme'], '| mode:', html._attrs['data-rill-industrial-mode']);
 console.log('label-primary pinned white:', vars['--dsw-alias-label-primary']);
+
+// The conversation header band: the slot anchor is display:contents, so the
+// paint has to land on the <header> element inside it. The class hash has no
+// stable _header_ substring, so a class probe silently matches nothing — that
+// regression made the band vanish twice (1.3.4, 1.3.5).
+const cssText = styleTags[0].textContent;
+if (/\[class\*=["']?_header_/.test(cssText)) {
+  throw new Error('header band still keyed on a _header_ class probe');
+}
+if (!cssText.includes('[data-slot="conversation.header"] > header')) {
+  throw new Error('header band does not target the <header> inside the slot anchor');
+}
+if (cssText.includes('[data-slot="conversation.header"] > header {')) {
+  throw new Error('header band rule is malformed');
+}
+console.log('header band -> anchor > header:', cssText.includes('[data-slot="conversation.header"] > header'));
 console.log('observers:', observerCount);
 
 // Teardown path

@@ -15,6 +15,7 @@
     "glassAlpha": "Panel opacity",
     "glassBlur": "Panel blur",
     "scanlines": "Scan texture",
+    "paperGrain": "Fibre strength",
     "on": "On",
     "off": "Off",
     "wallpaper": "Wallpaper",
@@ -38,6 +39,7 @@
     "tealorange": "Teal & Orange",
     "deepblue": "Deep Blue",
     "rose": "Rose Haze",
-    "violet": "Dusk Violet"
+    "violet": "Dusk Violet",
+    "parchment": "Ochre Folio"
   }
 }

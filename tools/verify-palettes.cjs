@@ -22,7 +22,17 @@ const code = fs.readFileSync(CLIENT, 'utf8');
 const version = JSON.parse(fs.readFileSync(PKG, 'utf8')).version;
 
 const STORE_KEY = 'rill-industrial-skin:settings:v1';
-const THEMES = ['indigo', 'celadon', 'tealorange', 'deepblue', 'rose', 'violet'];
+const THEMES = ['indigo', 'celadon', 'tealorange', 'deepblue', 'rose', 'violet', 'parchment'];
+// Palettes that ship their own interaction colour and their own key glyph ink.
+const DECLARED = { violet: '#0D1420', parchment: '#261E12' };
+// Palettes that flip the type colour: theme -> { dark, light } ink values.
+const INKED = { parchment: { dark: '#261E12', light: '#221B10' } };
+// Palettes that paint paper fibre; everyone else must resolve to none.
+const PAPERED = ['parchment'];
+// Deep plate: only palettes that declare one may paint a solid dark fill; every
+// other palette must leave --rill-plate as transparent so its look is unchanged.
+const PLATED = { parchment: { dark: '#BA8F62', light: '#B68C5F' } };
+const PLATE_INK = { parchment: '#261E12' };
 const MODES = ['dark', 'light'];
 
 /** Run client.js in a fresh stub world with one settings object, return the vars. */
@@ -71,7 +81,14 @@ function paintWorld(theme, mode) {
       return null;
     },
     querySelectorAll: () => [],
-    createElement() {
+    createElement(tag) {
+      if (tag === 'canvas') {
+        return {
+          width: 0, height: 0, dataset: {},
+          getContext: () => ({ beginPath() {}, arc() {}, fill() {}, fillRect() {}, set fillStyle(v) {} }),
+          toDataURL: () => 'data:image/png;base64,PAPERTILE',
+        };
+      }
       return { dataset: {}, textContent: '', style: {}, setAttribute() {}, remove() {}, appendChild() {} };
     },
     getElementById: (id) => wallNodes.find((n) => n.id === id) || null,
@@ -129,6 +146,7 @@ const COLS = [
   ['--rill-bg', 'bg'], ['--rill-side', 'side'], ['--rill-surface', 'surf'],
   ['--rill-surface-2', 'surf2'], ['--rill-accent', 'accent'],
   ['--rill-accent2', 'accent2'], ['--rill-key-ink', 'keyInk'],
+  ['--rill-ink', 'ink'], ['--rill-plate', 'plate'], ['--rill-paper-tex', 'paper'],
 ];
 
 console.log('client version: ' + version);
@@ -154,18 +172,51 @@ for (const mode of MODES) {
       failures++;
     }
     // accent2 must fall back to accent exactly where it was not declared
-    const declared = theme === 'violet';
+    const declared = Object.prototype.hasOwnProperty.call(DECLARED, theme);
     const same = v['--rill-accent2'] === v['--rill-accent'];
-    const inkOk = declared ? hex(v['--rill-key-ink']).toUpperCase() === '#0D1420'
-                           : hex(v['--rill-key-ink']).toUpperCase() === '#FFFFFF';
+    const wantInk = declared ? DECLARED[theme] : '#FFFFFF';
+    const inkOk = hex(v['--rill-key-ink']).toUpperCase() === wantInk;
     if (declared === same) {
       console.log('  ! accent2 should ' + (declared ? 'differ from' : 'equal') + ' accent — got ' +
                   hex(v['--rill-accent2']) + ' vs ' + hex(v['--rill-accent']));
       failures++;
     }
     if (!inkOk) { console.log('  ! key ink unexpected:', hex(v['--rill-key-ink'])); failures++; }
+
+    // Type colour: only INKED palettes may leave pure white.
+    const wantTypeInk = INKED[theme] ? INKED[theme][mode] : '#FFFFFF';
+    const gotTypeInk = hex(v['--rill-ink']).toUpperCase();
+    if (gotTypeInk !== wantTypeInk) {
+      console.log('  ! type ink should be ' + wantTypeInk + ' — got ' + gotTypeInk);
+      failures++;
+    }
+
+    // Deep plate: declared palettes get their own solid fill + cream glyphs;
+    // everyone else gets transparent so the host keeps its neutral buttons.
+    const plated = Object.prototype.hasOwnProperty.call(PLATED, theme);
+    const wantPlate = plated ? PLATED[theme][mode] : 'TRANSPARENT';
+    const gotPlate = String(v['--rill-plate']).indexOf('rgba(0, 0, 0, 0)') === 0 ||
+                     String(v['--rill-plate']) === 'transparent' ? 'TRANSPARENT' : hex(v['--rill-plate']).toUpperCase();
+    if (gotPlate !== wantPlate) {
+      console.log('  ! plate should be ' + wantPlate + ' — got ' + gotPlate);
+      failures++;
+    }
+    if (plated && hex(v['--rill-plate-ink']).toUpperCase() !== PLATE_INK[theme]) {
+      console.log('  ! plate ink should be ' + PLATE_INK[theme] + ' — got ' + hex(v['--rill-plate-ink']).toUpperCase());
+      failures++;
+    }
+
+    // Paper fibre: generated for PAPERED palettes, none for everyone else.
+    const tex = String(v['--rill-paper-tex'] || '');
+    const hasTex = tex.startsWith('url("data:image/png');
+    const wantTex = PAPERED.indexOf(theme) >= 0;
+    if (hasTex !== wantTex) {
+      console.log('  ! paper fibre ' + (wantTex ? 'missing' : 'unexpected') + ': ' + tex.slice(0, 28));
+      failures++;
+    }
   }
 }
 
 if (failures) { console.log('\nFAILED — ' + failures + ' problem(s)'); process.exit(1); }
-console.log('\nOK — six palettes x two appearances painted; accent2 falls back to accent wherever not declared');
+console.log('\nOK — seven palettes x two appearances painted; accent2 falls back to accent wherever not declared;');
+console.log('     type ink stays white except 赭笺; paper fibre generated only for 赭笺');
